@@ -4,9 +4,7 @@ ENV APT_MIRROR http://opensource.xtdv.net/ubuntu
 RUN sed -i "s|http://archive.ubuntu.com/ubuntu|${APT_MIRROR}|g" /etc/apt/sources.list
 
 RUN apt-get update
-RUN apt-get install -y python3-pip
-RUN apt-get install -y python3
-RUN apt-get install -y uwsgi
+RUN apt-get install -y python3 python3-pip
 
 RUN mkdir /webapps
 ADD requirements.txt /webapps
