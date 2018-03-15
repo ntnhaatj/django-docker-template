@@ -1,0 +1,43 @@
+version: '3'
+services:
+  db:
+    restart: always
+    image: postgres
+    env_file:
+      - ./env/postgresql.env
+    volumes:
+      - db-data:/var/lib/postgresql
+    depends_on:
+      - backup
+  backup:
+    restart: always
+    image: postgres
+    volumes:
+      - db-data:/var/lib/backup/data
+    command: "true"
+  nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/certs/:/www/ssl/:ro
+      - ./mysite/static/:/www/static/:ro
+      - /var/log/nginx
+    depends_on:
+      - web
+  web:
+    restart: always
+    build: ./mysite
+    expose:
+      - "8000"
+    env_file:
+      - ./env/web.env
+    volumes:
+      - ./mysite:/webapps
+    depends_on:
+      - db
+
+volumes:
+  db-data:
