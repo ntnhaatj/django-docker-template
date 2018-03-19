@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   db:
     restart: always
@@ -9,15 +10,18 @@ services:
       - db-data:/var/lib/postgresql
     depends_on:
       - backup
+
   backup:
     restart: always
     image: postgres
     volumes:
       - db-data:/var/lib/backup/data
     command: "true"
+
   nginx:
     restart: always
     build: ./nginx
+    image: mynginx
     ports:
       - "80:80"
       - "443:443"
@@ -26,18 +30,42 @@ services:
       - ./mysite/static/:/www/static/:ro
       - /var/log/nginx
     depends_on:
-      - web
-  web:
+      - webapps
+
+  webapps:
     restart: always
     build: ./mysite
+    image: mysite-django
     expose:
       - "8000"
     env_file:
-      - ./env/web.env
+      - ./env/webapps.env
     volumes:
       - ./mysite:/webapps
     depends_on:
       - db
+      - redis-server
+    command: /bin/bash run_webapps.sh
+
+  redis-server:
+    restart: always
+    image: redis
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/var/lib/redis
+
+  celery:
+    restart: always
+    build: ./mysite
+    image: mysite-django
+    env_file:
+      - ./env/webapps.env
+    depends_on:
+      - redis-server
+      - webapps
+    command: /bin/bash run_celery.sh
 
 volumes:
   db-data:
+  redis-data:

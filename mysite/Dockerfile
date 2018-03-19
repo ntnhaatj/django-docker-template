@@ -12,5 +12,5 @@ WORKDIR /webapps
 RUN pip3 install -r requirements.txt
 
 COPY . /webapps
-
-CMD ["/bin/bash","/webapps/run_webapps.sh"]
+RUN chmod a+x /webapps/run_webapps.sh
+RUN chmod a+x /webapps/run_celery.sh

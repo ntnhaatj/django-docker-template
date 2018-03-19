@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'polls.apps.PollsConfig',
+    'django_celery_beat',
+    'django_celery_results',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,3 +125,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Celery
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', '')
+
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', '')
+
+CELERY_ACCEPT_CONTENT = [os.environ.get('CELERY_ACCEPT_CONTENT', '')]
+
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', '')
+
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', '')
+
+CELERY_TIMEZONE = TIME_ZONE
